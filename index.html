@@ -81,6 +81,24 @@
             text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
 
+        .library-btn {
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .library-btn:hover {
+            background-color: rgba(88, 166, 255, 0.1);
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+        }
+
         /* Hierarchy Styles */
         .phase-section {
             margin-bottom: 30px;
@@ -217,6 +235,121 @@
             transform: rotate(180deg);
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 4% auto; 
+            padding: 30px; 
+            border: 1px solid var(--accent); 
+            width: 85%; 
+            max-width: 800px; 
+            max-height: 85vh; 
+            overflow-y: auto; 
+            border-radius: 8px; 
+            box-shadow: 0 0 30px rgba(88, 166, 255, 0.15);
+            position: relative;
+        }
+
+        .close-btn {
+            color: var(--text-muted);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 0.8;
+        }
+
+        .close-btn:hover {
+            color: var(--accent);
+        }
+
+        .res-header {
+            font-family: var(--font-mono);
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .res-section {
+            margin-bottom: 30px;
+        }
+
+        .res-section h3 {
+            color: var(--text-main);
+            font-size: 1rem;
+            margin-bottom: 10px;
+            background-color: #21262d;
+            padding: 8px 10px;
+            border-left: 3px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            margin-top: 20px;
+        }
+
+        .res-item {
+            margin-bottom: 12px;
+            padding-left: 15px;
+            border-left: 1px solid var(--border);
+        }
+
+        .res-type {
+            font-size: 0.75rem;
+            color: var(--success);
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-right: 8px;
+            background: rgba(35, 134, 54, 0.1);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .res-title {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .res-author {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-style: italic;
+            margin-top: 2px;
+        }
+        
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        /* Scrollbar for modal */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .modal-content::-webkit-scrollbar-track {
+            background: var(--bg-color); 
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--border); 
+            border-radius: 4px;
+        }
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted); 
+        }
+
     </style>
 </head>
 <body>
@@ -225,6 +358,7 @@
     <header>
         <h1>PROJECT: WHOLE BRAIN EMULATION</h1>
         <div class="subtitle">Curriculum Status: <span id="status-text">Initiated</span></div>
+        <button class="library-btn" onclick="toggleLibrary()">[ ACCESS CLASSIFIED ARCHIVES ]</button>
         
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
@@ -238,6 +372,348 @@
 
     <div class="controls">
         <button class="reset-btn" onclick="resetProgress()">⚠ Factory Reset Progress</button>
+    </div>
+</div>
+
+<!-- RESOURCES MODAL -->
+<div id="library-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="toggleLibrary()">&times;</span>
+        <h2 class="res-header">Master Resource Library</h2>
+
+        <!-- PHASE 1 RESOURCES -->
+        <div class="res-section">
+            <h3>Module 1.1: Linear Algebra</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Introduction to Linear Algebra</span>
+                <div class="res-author">Gilbert Strang (The standard MIT text)</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">VIDEO</span>
+                <span class="res-title">Essence of Linear Algebra</span>
+                <div class="res-author">3Blue1Brown (YouTube) - Mandatory for intuition</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Linear Algebra Done Right</span>
+                <div class="res-author">Sheldon Axler (For pure math rigor)</div>
+            </div>
+
+            <h3>Module 1.2: Calculus & Dynamics</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Nonlinear Dynamics and Chaos</span>
+                <div class="res-author">Steven Strogatz (Crucial for brain modeling)</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Calculus: Early Transcendentals</span>
+                <div class="res-author">James Stewart</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">COURSE</span>
+                <span class="res-title">MIT 18.03 Differential Equations</span>
+                <div class="res-author">MIT OCW</div>
+            </div>
+
+            <h3>Module 1.3: Probability & Information</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Elements of Information Theory</span>
+                <div class="res-author">Cover & Thomas (The Bible of Info Theory)</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Probability Theory: The Logic of Science</span>
+                <div class="res-author">E.T. Jaynes (Bayesian focus)</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Information Theory, Inference, and Learning Algorithms</span>
+                <div class="res-author">David MacKay</div>
+            </div>
+
+            <h3>Module 1.4: Graph Theory</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Networks, Crowds, and Markets</span>
+                <div class="res-author">Easley & Kleinberg</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">INTERACTIVE</span>
+                <span class="res-title">Network Science</span>
+                <div class="res-author">Albert-László Barabási (Available online)</div>
+            </div>
+
+            <h3>Module 1.5: Complex Numbers</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Visual Complex Analysis</span>
+                <div class="res-author">Tristan Needham (Essential for Quantum intuition)</div>
+            </div>
+
+            <h3>Module 2.1 - 2.3: Neuroscience Core</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Principles of Neural Science</span>
+                <div class="res-author">Kandel, Schwartz, et al. (The absolute authority)</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">COURSE</span>
+                <span class="res-title">Medical Neuroscience</span>
+                <div class="res-author">Duke University (Coursera) - Rigorous anatomy</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">The Synaptic Organization of the Brain</span>
+                <div class="res-author">Gordon Shepherd</div>
+            </div>
+
+            <h3>Module 2.4: Connectomics</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Connectome: How the Brain's Wiring Makes Us Who We Are</span>
+                <div class="res-author">Sebastian Seung</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">PAPER</span>
+                <span class="res-title">Networks of the Brain</span>
+                <div class="res-author">Olaf Sporns</div>
+            </div>
+
+            <h3>Module 2.5: Quantum Biology</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Consciousness and the Universe</span>
+                <div class="res-author">Roger Penrose & Stuart Hameroff</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Life on the Edge: The Coming of Age of Quantum Biology</span>
+                <div class="res-author">Jim Al-Khalili & Johnjoe McFadden</div>
+            </div>
+
+            <h3>Module 3.1: Cognitive Psychology</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Cognitive Psychology</span>
+                <div class="res-author">Goldstein</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Models of the Mind</span>
+                <div class="res-author">Grace Lindsay</div>
+            </div>
+
+            <h3>Module 3.2: Behavioral Psychology</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Thinking, Fast and Slow</span>
+                <div class="res-author">Daniel Kahneman</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">The Psychology of Learning and Behavior</span>
+                <div class="res-author">Schwartz</div>
+            </div>
+
+            <h3>Module 3.3 - 3.4: Sociology & Game Theory</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">The Strategy of Conflict</span>
+                <div class="res-author">Thomas Schelling</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Multiagent Systems</span>
+                <div class="res-author">Yoav Shoham</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Theory of Games and Economic Behavior</span>
+                <div class="res-author">John von Neumann & Oskar Morgenstern</div>
+            </div>
+
+            <h3>Module 3.5: Philosophy & Ethics</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">The Conscious Mind</span>
+                <div class="res-author">David Chalmers (The Hard Problem)</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Consciousness: Confessions of a Romantic Reductionist</span>
+                <div class="res-author">Christof Koch</div>
+            </div>
+
+            <h3>Module 4.1: Classical AI</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Deep Learning</span>
+                <div class="res-author">Ian Goodfellow, Yoshua Bengio, Aaron Courville</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">COURSE</span>
+                <span class="res-title">CS231n: Convolutional Neural Networks</span>
+                <div class="res-author">Stanford University (YouTube)</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Pattern Recognition and Machine Learning</span>
+                <div class="res-author">Christopher Bishop</div>
+            </div>
+
+            <h3>Module 4.2 - 4.3: Comp Neuro & SNNs</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Theoretical Neuroscience</span>
+                <div class="res-author">Dayan and Abbott</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">ONLINE BOOK</span>
+                <span class="res-title">Neuronal Dynamics</span>
+                <div class="res-author">Wulfram Gerstner</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">TOOL</span>
+                <span class="res-title">Brian2 Simulator Documentation</span>
+                <div class="res-author">briansimulator.org</div>
+            </div>
+
+            <h3>Module 4.4: Quantum Algorithms</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Quantum Computation and Quantum Information</span>
+                <div class="res-author">Nielsen & Chuang (Mike & Ike)</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">INTERACTIVE</span>
+                <span class="res-title">Qiskit Textbook</span>
+                <div class="res-author">IBM Quantum Learning</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Quantum Computing Since Democritus</span>
+                <div class="res-author">Scott Aaronson</div>
+            </div>
+        </div>
+
+        <!-- PHASE 2 RESOURCES -->
+        <div class="res-section">
+            <h3>Module 5.1 - 5.2: Electronics (Analog & Circuits)</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">The Art of Electronics</span>
+                <div class="res-author">Horowitz & Hill (Must have)</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">COURSE</span>
+                <span class="res-title">6.002 Circuits and Electronics</span>
+                <div class="res-author">MIT (edX/OCW)</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Microelectronic Circuits</span>
+                <div class="res-author">Sedra & Smith</div>
+            </div>
+
+            <h3>Module 5.3: Digital Logic</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Digital Design and Computer Architecture</span>
+                <div class="res-author">Harris & Harris</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Computer Organization and Design</span>
+                <div class="res-author">Patterson & Hennessy</div>
+            </div>
+
+            <h3>Module 6.1 - 6.3: Quantum Hardware</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Introduction to Superconductivity</span>
+                <div class="res-author">Michael Tinkham</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Matter and Methods at Low Temperatures</span>
+                <div class="res-author">Frank Pobell (Cryogenics bible)</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">PAPER</span>
+                <span class="res-title">Superconducting Qubits and the Physics of Josephson Junctions</span>
+                <div class="res-author">Devoret et al.</div>
+            </div>
+
+            <h3>Module 7.1 - 7.3: Neuromorphic Engineering</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Analog VLSI and Neural Systems</span>
+                <div class="res-author">Carver Mead</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Neuromorphic Photonics</span>
+                <div class="res-author">Paul Prucnal</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Event-Based Neuromorphic Systems</span>
+                <div class="res-author">Liu & Delbruck</div>
+            </div>
+        </div>
+
+        <!-- PHASE 3 RESOURCES -->
+        <div class="res-section">
+            <h3>Module 8.1 - 8.3: System Integration</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Principles of Neural Design</span>
+                <div class="res-author">Sterling and Laughlin</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Brain-Computer Interfacing</span>
+                <div class="res-author">Rajesh Rao</div>
+            </div>
+
+            <h3>Module 9.1 - 9.3: Developmental Robotics</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Developmental Robotics: From Babies to Robots</span>
+                <div class="res-author">Angelo Cangelosi</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">How the Body Shapes the Way We Think</span>
+                <div class="res-author">Rolf Pfeifer</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Probabilistic Robotics</span>
+                <div class="res-author">Sebastian Thrun</div>
+            </div>
+
+            <h3>Module 10.1 - 10.3: Safety & Alignment</h3>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Superintelligence: Paths, Dangers, Strategies</span>
+                <div class="res-author">Nick Bostrom</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">Human Compatible</span>
+                <div class="res-author">Stuart Russell</div>
+            </div>
+            <div class="res-item">
+                <span class="res-type">BOOK</span>
+                <span class="res-title">The Alignment Problem</span>
+                <div class="res-author">Brian Christian</div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -757,6 +1233,23 @@
         } else {
             container.style.display = "block";
             arrow.innerHTML = "▲";
+        }
+    }
+
+    function toggleLibrary() {
+        const modal = document.getElementById('library-modal');
+        if (modal.style.display === "block") {
+            modal.style.display = "none";
+        } else {
+            modal.style.display = "block";
+        }
+    }
+
+    // Close modal if clicked outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('library-modal');
+        if (event.target == modal) {
+            modal.style.display = "none";
         }
     }
 
