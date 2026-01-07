@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whole Brain Emulation | Master Curriculum</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent-dim: #1f6feb;
+            --success: #238636;
+            --border: #30363d;
+            --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header & Progress */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-family: var(--font-mono);
+        }
+
+        .progress-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            height: 24px;
+            width: 100%;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: var(--success);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+
+        /* Hierarchy Styles */
+        .phase-section {
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--card-bg);
+        }
+
+        .phase-header {
+            background-color: #21262d;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .phase-header:hover {
+            background-color: #30363d;
+        }
+
+        .phase-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .step-container {
+            padding: 0 20px;
+            display: none; /* Hidden by default */
+            border-top: 1px solid var(--border);
+        }
+
+        .step-container.open {
+            display: block;
+        }
+
+        .step-block {
+            margin: 20px 0;
+        }
+
+        .step-title {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .module-block {
+            margin-left: 15px;
+            margin-bottom: 20px;
+        }
+
+        .module-title {
+            font-weight: bold;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        /* Checklist Items */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            padding: 6px 10px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: flex-start;
+            font-size: 0.95rem;
+        }
+
+        li:hover {
+            background-color: rgba(88, 166, 255, 0.1);
+        }
+
+        li::before {
+            content: "[ ]";
+            font-family: var(--font-mono);
+            margin-right: 10px;
+            color: var(--text-muted);
+            min-width: 25px;
+        }
+
+        li.completed {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        li.completed::before {
+            content: "[x]";
+            color: var(--success);
+        }
+
+        /* Reset Button */
+        .controls {
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+
+        button.reset-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            border-radius: 4px;
+        }
+
+        button.reset-btn:hover {
+            border-color: #da3633;
+            color: #da3633;
+        }
+
+        /* Arrow Indicator */
+        .arrow {
+            transition: transform 0.3s;
+        }
+        .open .arrow {
+            transform: rotate(180deg);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>PROJECT: WHOLE BRAIN EMULATION</h1>
+        <div class="subtitle">Curriculum Status: <span id="status-text">Initiated</span></div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+            <div class="progress-text" id="progress-label">0% Complete</div>
+        </div>
+    </header>
+
+    <div id="curriculum-content">
+        <!-- Content will be injected by JS -->
+    </div>
+
+    <div class="controls">
+        <button class="reset-btn" onclick="resetProgress()">⚠ Factory Reset Progress</button>
+    </div>
+</div>
+
+<script>
+    // --- THE DATA STRUCTURE ---
+    const curriculumData = [
+        {
+            phase: "PHASE 1: THE ARCHITECT (Theory & Software)",
+            steps: [
+                {
+                    title: "Step 1: The Mathematical Foundation",
+                    modules: [
+                        {
+                            name: "Module 1.1: Linear Algebra",
+                            topics: [
+                                "Vectors & Scalars: Definitions",
+                                "Linear Combinations & Spans",
+                                "Basis & Dimension",
+                                "Dot Products & Orthogonality",
+                                "Matrix Multiplication & Transformations",
+                                "Determinants & Rank",
+                                "Eigenvalues & Eigenvectors",
+                                "Singular Value Decomposition (SVD)"
+                            ]
+                        },
+                        {
+                            name: "Module 1.2: Calculus & Dynamics",
+                            topics: [
+                                "Multivariable Derivatives (Gradients)",
+                                "The Chain Rule (Backpropagation logic)",
+                                "First-Order ODEs (Growth/Decay)",
+                                "Second-Order ODEs (Harmonic Oscillators)",
+                                "Phase Space Trajectories",
+                                "Coupled Differential Equations"
+                            ]
+                        },
+                        {
+                            name: "Module 1.3: Probability & Information",
+                            topics: [
+                                "Probability Distributions (PDFs)",
+                                "Bayes' Theorem & Inference",
+                                "Shannon Entropy",
+                                "KL Divergence",
+                                "Mutual Information"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: "Step 2: The Biological Blueprint",
+                    modules: [
+                        {
+                            name: "Module 2.1: Cellular Neuroscience",
+                            topics: [
+                                "Neuron Anatomy (Soma, Axon, Dendrite)",
+                                "Resting Membrane Potential (Nernst Eq)",
+                                "Action Potential Dynamics (Hodgkin-Huxley logic)",
+                                "Myelination & Saltatory Conduction"
+                            ]
+                        },
+                        {
+                            name: "Module 2.2: Synaptic Transmission",
+                            topics: [
+                                "Neurotransmitters (Glutamate, GABA)",
+                                "Vesicle Release Mechanism",
+                                "Receptors (Ionotropic vs Metabotropic)",
+                                "Plasticity: LTP & LTD (Hebbian Learning)"
+                            ]
+                        },
+                        {
+                            name: "Module 2.5: Quantum Biology",
+                            topics: [
+                                "Microtubule Structure & Tubulin Dipoles",
+                                "Orchestrated Objective Reduction (Orch OR)",
+                                "Quantum Tunneling in Ion Channels",
+                                "Coherence in Warm Biological Systems"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: "Step 3: Psychology & Sociology",
+                    modules: [
+                        {
+                            name: "Module 3.1: Cognitive Psychology",
+                            topics: [
+                                "Atkinson-Shiffrin Memory Model",
+                                "Working Memory Components",
+                                "Selective Attention & Filtering",
+                                "Metacognition & Theory of Mind"
+                            ]
+                        },
+                        {
+                            name: "Module 3.2: Behavioral Psychology",
+                            topics: [
+                                "Classical & Operant Conditioning",
+                                "Reinforcement Schedules",
+                                "Dopamine Prediction Error"
+                            ]
+                        },
+                        {
+                            name: "Module 3.4: Game Theory & Ethics",
+                            topics: [
+                                "Nash Equilibrium",
+                                "The Prisoner's Dilemma",
+                                "Utilitarianism vs. Deontology",
+                                "The Alignment Problem (Paperclip Maximizer)"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: "Step 4: Computer Science & AI",
+                    modules: [
+                        {
+                            name: "Module 4.1: Classical AI",
+                            topics: [
+                                "Feedforward Neural Networks",
+                                "Backpropagation & Gradient Descent",
+                                "Transformers & Self-Attention",
+                                "Reinforcement Learning (Q-Learning)"
+                            ]
+                        },
+                        {
+                            name: "Module 4.2: Computational Neuroscience",
+                            topics: [
+                                "Leaky Integrate-and-Fire Model",
+                                "Spike-Timing Dependent Plasticity (STDP)",
+                                "Neural Coding (Rate vs Temporal)"
+                            ]
+                        },
+                        {
+                            name: "Module 4.4: Quantum Algorithms",
+                            topics: [
+                                "Qubits & Bloch Spheres",
+                                "Quantum Gates (Hadamard, CNOT)",
+                                "Superposition & Entanglement",
+                                "Grover's Algorithm & QFT"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            phase: "PHASE 2: THE BUILDER (Hardware & Engineering)",
+            steps: [
+                {
+                    title: "Step 5: Basic Electronics",
+                    modules: [
+                        {
+                            name: "Module 5.1: Circuit Analysis",
+                            topics: [
+                                "Ohm's Law & Kirchhoff's Laws",
+                                "RC Circuits (Time Constants)",
+                                "Impedance & Frequency Response"
+                            ]
+                        },
+                        {
+                            name: "Module 5.2: Analog Electronics",
+                            topics: [
+                                "Transistors (MOSFETs)",
+                                "Op-Amps (Summers, Integrators)",
+                                "Active Filters (Low/High Pass)"
+                            ]
+                        },
+                        {
+                            name: "Module 5.3: Digital Logic",
+                            topics: [
+                                "Logic Gates & Boolean Algebra",
+                                "Flip-Flops & Registers",
+                                "FPGA Basics"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: "Step 6: Quantum Hardware",
+                    modules: [
+                        {
+                            name: "Module 6.1: Superconducting Physics",
+                            topics: [
+                                "Cooper Pairs & Zero Resistance",
+                                "Josephson Junctions",
+                                "Transmon Qubit Design"
+                            ]
+                        },
+                        {
+                            name: "Module 6.2: Control Engineering",
+                            topics: [
+                                "Microwave Pulse Control",
+                                "Rabi Oscillations",
+                                "Dispersive Readout"
+                            ]
+                        },
+                        {
+                            name: "Module 6.3: Cryogenics",
+                            topics: [
+                                "Dilution Refrigeration Principles",
+                                "Thermal Noise & Decoherence (T1/T2)"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: "Step 7: Neuromorphic Engineering",
+                    modules: [
+                        {
+                            name: "Module 7.1: Memristors",
+                            topics: [
+                                "Hysteresis Loops & Resistive Switching",
+                                "Crossbar Array Architectures",
+                                "Non-Volatile Memory Physics"
+                            ]
+                        },
+                        {
+                            name: "Module 7.2: Spiking Silicon",
+                            topics: [
+                                "Subthreshold Transistor Physics",
+                                "Address Event Representation (AER)",
+                                "Asynchronous Circuit Design"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            phase: "PHASE 3: THE GENESIS (Integration)",
+            steps: [
+                {
+                    title: "Step 8: System Integration",
+                    modules: [
+                        {
+                            name: "Module 8.1: Hybrid Architecture",
+                            topics: [
+                                "QPU-NPU High-Speed Interfaces",
+                                "Latent Space Mapping",
+                                "Real-Time Feedback Loops"
+                            ]
+                        },
+                        {
+                            name: "Module 8.3: Physical Assembly",
+                            topics: [
+                                "Thermal Isolation (10mK vs 300K)",
+                                "Faraday Cages & Shielding"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: "Step 9: Developmental Robotics",
+                    modules: [
+                        {
+                            name: "Module 9.1: Embodiment",
+                            topics: [
+                                "Sensorimotor Loops & Proprioception",
+                                "Active Perception (Saccades)",
+                                "Inverse Kinematics Models"
+                            ]
+                        },
+                        {
+                            name: "Module 9.2: Intrinsic Motivation",
+                            topics: [
+                                "Curiosity Algorithms (Entropy Reduction)",
+                                "Scaffolding & Curriculum Learning"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: "Step 10: Validation & Safety",
+                    modules: [
+                        {
+                            name: "Module 10.1: Tests of Mind",
+                            topics: [
+                                "Extended Turing Test",
+                                "The Lovelace Test (Creativity)",
+                                "Qualia Verification"
+                            ]
+                        },
+                        {
+                            name: "Module 10.2: Containment",
+                            topics: [
+                                "Air-Gapping Protocols",
+                                "Hardware Kill Switches",
+                                "Value Loading Verification"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ];
+
+    // --- APPLICATION LOGIC ---
+
+    const contentDiv = document.getElementById('curriculum-content');
+    const progressBar = document.getElementById('progress-bar');
+    const progressLabel = document.getElementById('progress-label');
+    const statusText = document.getElementById('status-text');
+
+    // Load state from local storage
+    let userState = JSON.parse(localStorage.getItem('brainProjectState')) || {};
+
+    function saveState() {
+        localStorage.setItem('brainProjectState', JSON.stringify(userState));
+        updateProgress();
+    }
+
+    function generateID(str) {
+        return str.replace(/[^a-zA-Z0-9]/g, '');
+    }
+
+    function toggleItem(id) {
+        if (userState[id]) {
+            delete userState[id];
+        } else {
+            userState[id] = true;
+        }
+        
+        // Update UI immediately
+        const li = document.getElementById(id);
+        if(li) {
+            li.classList.toggle('completed');
+        }
+        
+        saveState();
+    }
+
+    function togglePhase(headerElement) {
+        const container = headerElement.nextElementSibling;
+        const arrow = headerElement.querySelector('.arrow');
+        
+        if (container.style.display === "block") {
+            container.style.display = "none";
+            arrow.innerHTML = "▼";
+        } else {
+            container.style.display = "block";
+            arrow.innerHTML = "▲";
+        }
+    }
+
+    function render() {
+        let html = '';
+        let totalItems = 0;
+
+        curriculumData.forEach((phase, pIndex) => {
+            html += `
+            <div class="phase-section">
+                <div class="phase-header" onclick="togglePhase(this)">
+                    <span class="phase-title">${phase.phase}</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="step-container">`;
+            
+            phase.steps.forEach(step => {
+                html += `
+                    <div class="step-block">
+                        <div class="step-title">${step.title}</div>`;
+                
+                step.modules.forEach(module => {
+                    html += `
+                        <div class="module-block">
+                            <div class="module-title">${module.name}</div>
+                            <ul>`;
+                    
+                    module.topics.forEach(topic => {
+                        const id = generateID(phase.phase + step.title + module.name + topic);
+                        totalItems++;
+                        const isCompleted = userState[id] ? 'completed' : '';
+                        
+                        html += `<li id="${id}" class="${isCompleted}" onclick="toggleItem('${id}')">${topic}</li>`;
+                    });
+
+                    html += `</ul></div>`;
+                });
+
+                html += `</div>`;
+            });
+
+            html += `</div></div>`;
+        });
+
+        contentDiv.innerHTML = html;
+        // Store total count for progress calc
+        contentDiv.dataset.total = totalItems;
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const total = parseInt(contentDiv.dataset.total) || 1;
+        const completed = Object.keys(userState).length;
+        const percent = Math.round((completed / total) * 100);
+
+        progressBar.style.width = percent + "%";
+        progressLabel.innerText = percent + "% Complete";
+
+        if (percent === 0) statusText.innerText = "Initiated";
+        else if (percent < 25) statusText.innerText = "Phase 1: Architecture";
+        else if (percent < 50) statusText.innerText = "Phase 2: Construction";
+        else if (percent < 90) statusText.innerText = "Phase 3: Integration";
+        else if (percent === 100) statusText.innerText = "SENTIENCE ACHIEVED";
+    }
+
+    function resetProgress() {
+        if(confirm("Are you sure you want to reset your entire curriculum progress?")) {
+            userState = {};
+            saveState();
+            render();
+        }
+    }
+
+    // Init
+    render();
+
+</script>
+
+</body>
+</html>
